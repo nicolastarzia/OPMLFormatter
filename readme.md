@@ -8,7 +8,7 @@ I have a big OPML file, and sometimes I need to shrink and remove older RSS's
 To develop and run this project it's simple, put your feedly.opml file in the current folder:
 
 ```shell
-git clone https://github.com/your/awesome-project.git
+git clone https://github.com/nicolastarzia/OPMLFormatter.git
 cd opmlloader/
 go run .\opmlLoader.go
 ```
