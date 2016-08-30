@@ -57,7 +57,6 @@ func main() {
 
 	w := bufio.NewWriter(fil)
 	w.WriteString(`<?xml version="1.0" encoding="UTF-8"?>
-
 <opml version="1.0">
     <head>
         <title>Nicolas subscriptions in feedly Cloud</title>
