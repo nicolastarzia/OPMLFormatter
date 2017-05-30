@@ -4,21 +4,31 @@ import (
 	"bufio"
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
+	"github.com/SlyMarbo/rss"
 	"github.com/gilliek/go-opml/opml"
 )
 
 func requestHTTP(outlin opml.Outline, bufWRT *bufio.Writer) {
 	currentLink := outlin.XMLURL
-	resp, err := http.Get(currentLink)
-	if err == nil && resp.StatusCode == 200 {
-		bufWRT.WriteString("<outline type=\"rss\" text=\"" + outlin.Text + "\" title=\"" + outlin.Title + "\" htmlUrl=\"" + outlin.HTMLURL + "\" xmlUrl=\"" + outlin.XMLURL + "\"/>\n")
-		fmt.Printf("%q - %q\n", currentLink, resp.Status)
+	feed, err := rss.Fetch(currentLink)
+
+	if err == nil {
+		if len(feed.Items) == 0 {
+			fmt.Printf("%s (DEPRECATED - NO POST)\n", currentLink)
+			return
+		}
+		if feed.Items[0].Date.Before(time.Now().AddDate(0, -5, 0)) {
+			fmt.Printf("%s - %s (DEPRECATED - older)\n", currentLink, feed.Items[0].Date)
+		} else {
+			fmt.Printf("%s - %s (added)\n", currentLink, feed.Refresh)
+			bufWRT.WriteString("<outline type=\"rss\" text=\"" + outlin.Text + "\" title=\"" + outlin.Title + "\" htmlUrl=\"" + outlin.HTMLURL + "\" xmlUrl=\"" + outlin.XMLURL + "\"/>\n")
+		}
 	} else {
-		fmt.Printf("%q - %q\n", currentLink, " inválido")
+		fmt.Printf("%q - %s\n", currentLink, err)
 	}
 	bufWRT.Flush()
 }
